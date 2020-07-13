@@ -61,6 +61,7 @@ import json
 import logging
 import re
 import sys
+from pkg_resources import resource_filename
 
 import mwapi
 import mwcli
@@ -81,6 +82,11 @@ def transform_content(
 
     namespace_id_map = {ns.id: ns.name for ns in dump.site_info.namespaces}
 
+    # Is subclass of Wikimedia internal item
+    filepath = resource_filename('mwtext', 'assets/wikimedia_internal_item_qids.txt')
+    with open(filepath) as f:
+        wm_internal_items = [line.rstrip('\n') for line in f]
+
     for page in dump:
         if verbose:
             sys.stderr.write(page.title + ": ")
@@ -88,7 +94,7 @@ def transform_content(
 
         for revision in page:
             relevant = is_relevant_page(
-                page, revision, include_criteria=include_criteria,
+                page, revision, wm_internal_items, include_criteria=include_criteria,
                 allowed_namespaces=allowed_namespaces,
                 allowed_content_models=allowed_content_models,
                 include_redirects=include_redirects,

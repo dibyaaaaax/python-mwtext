@@ -4,7 +4,7 @@ from pkg_resources import resource_filename
 import mwbase
 
 
-def include(page, revision):
+def include(page, revision, wm_internal_items):
     # Namespace zero
     if page.namespace != 0 or revision.model != 'wikibase-item':
         return False
@@ -31,12 +31,8 @@ def include(page, revision):
     if not sitelinks:
         return False
 
-    # Is subclass of Wikimedia internal item
-    filepath = resource_filename('mwtext', 'assets/wikimedia_internal_item_qids.txt')
-    with open(filepath) as f:
-        exclude_subclasses = [line.rstrip('\n') for line in f]
-    
-    if qid in exclude_subclasses:
+    # Is subclass of Wikimedia internal item    
+    if qid in wm_internal_items:
         return False
 
     # Is instance-of Wikimedia internal item or its subclasses
@@ -47,7 +43,7 @@ def include(page, revision):
         if claim.datavalue is not None and \
            claim.datavalue.type == 'wikibase-entityid':
             value = claim.datavalue.id
-            if value in exclude_subclasses:
+            if value in wm_internal_items:
                 return False
 
     return True

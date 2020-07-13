@@ -10,7 +10,7 @@ def get_siteinfo(session):
     return doc['query']
 
 
-def is_relevant_page(page, revision, include_criteria=None,
+def is_relevant_page(page, revision, wm_internal_items, include_criteria=None,
                      allowed_content_models=None, allowed_namespaces=None,
                      include_redirects=False, min_content_length=None):
     if revision.text is None:
@@ -28,7 +28,7 @@ def is_relevant_page(page, revision, include_criteria=None,
         if len(revision.text) < min_content_length:
             return False
     if include_criteria:
-        if not include_criteria.include(page, revision):
+        if not include_criteria.include(page, revision, wm_internal_items):
             return False
 
     return True
